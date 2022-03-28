@@ -1,5 +1,9 @@
-import { addFile } from './ipfsHelpers.js'
+/* eslint-disable */
+import { addFile } from "./ipfsHelpers.js";
+const { getCurrentWindow } = require("electron").remote;
+const fs = require("fs");
 global.filepath = undefined;
+
 export const dialogOpenWindows = (dialog, path) => {
   dialog
     .showOpenDialog({
@@ -32,7 +36,13 @@ export const dialogOpenWindows = (dialog, path) => {
     });
 };
 
-export const dialogOpenDarwin = (dialog, path) => {
+export const dialogOpenDarwin = (
+  dialog,
+  path,
+  ipfs,
+  isLoading,
+  state = null
+) => {
   // If the platform is 'darwin' (macOS)
   dialog
     .showOpenDialog({
@@ -42,7 +52,7 @@ export const dialogOpenDarwin = (dialog, path) => {
       filters: [
         {
           name: "Text Files",
-          //extensions: ["txt", "docx"],
+          extensions: ["png", "jpg", "jpeg", "gif"],
         },
       ],
       // Specifying the File Selector and Directory
@@ -50,16 +60,49 @@ export const dialogOpenDarwin = (dialog, path) => {
       properties: ["openFile", "openDirectory"],
     })
     .then(async (file) => {
-        console.log(file)
-        console.log(file.canceled);
-        if (!file.canceled) {
-        global.filepath = file.filePaths[0].toString();
-        const fileHash = await addFile('lol', global.filepath);
-        console.log(fileHash);
+      // file cancelled handling
+      if (file.canceled) {
+        console.log("cancelled", file.canceled);
+        isLoading.value = false;
+        global.filepath = undefined;
+        throw new Error("file upload was cancelled");
+        return;
       }
+      const fileName = file.filePaths[0].toString().split("/")[
+        file.filePaths[0].toString().split("/").length - 1
+      ];
+      const filePath = `/files/${fileName}`;
+      const fileHash = await addFile(fileName, file.filePaths[0], ipfs);
+      //linkCollection?.value.push(`https://ipfs.io/ipfs/${fileHash}`);
+      state?.mutations?.setLinkCollection(`https://ipfs.io/ipfs/${fileHash}`);
+      isLoading.value = false;
     })
     .catch((err) => {
-      console.log(err);
+      isLoading.value = false;
     });
 };
 
+export const downloadFileAndSave = async (dialog, path, ipfs, fileHash) => {
+  const Dialog = dialog
+  const IPFS = await ipfs;
+  const extractCIDfromURL = fileHash.split("/")[fileHash.split("/").length - 1];
+  const chunks = [];
+  const CAT = IPFS.cat(extractCIDfromURL)
+  for await (const chunk of CAT) {
+    chunks.push(chunk);
+  }
+  Dialog
+    .showSaveDialog(getCurrentWindow(), {
+      title: "Save File",
+      defaultPath: path.join(__dirname, "/downloads"),
+      buttonLabel: "Save",
+    })
+    .then(async (result) => {
+      if (result.canceled) return;
+      let savePath = result.filePath;
+      if (!savePath.endsWith('.mfs')) {
+        savePath += '.jpeg';
+      }
+      fs.writeFileSync(savePath, Buffer.concat(chunks))
+    });
+};

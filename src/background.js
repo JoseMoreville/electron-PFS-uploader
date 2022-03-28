@@ -1,27 +1,35 @@
 'use strict'
-//require('@electron/remote/main').initialize()
+require('@electron/remote/main').initialize()
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const ElectronStore = require('electron-store');
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+ElectronStore.initRenderer();
+
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
+    icon: './assets/p2p.png',
     width: 1280,
     height: 960,
+    minHeight: 800,
+    minWidth: 1024,
+    center: true,
+    title: '',
     webPreferences: {
-      
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      preload: './preload.js',
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       enableRemoteModule: true,
-      webSecurity: false
+      webSecurity: false, 
     }
   })
 

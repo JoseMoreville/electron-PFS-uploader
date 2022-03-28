@@ -1,18 +1,28 @@
 <!DOCTYPE html>
-<html lang="">
+<html class="h-full">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link href="../public/index.css">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="icon" href="<%= BASE_URL %>p2p.png">
+    <link rel="icon" href="./p2p.png">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link
+    rel="preload"
+    href="/font/Inter-roman.var.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <!-- <link rel="preload" href="/font/Inter-italic.var.woff2" as="font" type="font/woff2" crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="/font/inter.css" />
   </head>
-  <body>
+  <body  class="h-full">
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app"  class="h-full bg-slate-100 flex justify-center"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>

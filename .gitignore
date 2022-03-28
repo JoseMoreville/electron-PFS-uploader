@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
+src/App.vue
+src/assets/p2p.png
+public/p2p.png
