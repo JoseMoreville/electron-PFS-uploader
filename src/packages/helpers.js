@@ -84,13 +84,9 @@ export const dialogOpenDarwin = (
 
 export const downloadFileAndSave = async (dialog, path, ipfs, fileHash) => {
   const Dialog = dialog
-  const IPFS = await ipfs;
   const extractCIDfromURL = fileHash.split("/")[fileHash.split("/").length - 1];
   const chunks = [];
-  const CAT = IPFS.cat(extractCIDfromURL)
-  for await (const chunk of CAT) {
-    chunks.push(chunk);
-  }
+
   Dialog
     .showSaveDialog(getCurrentWindow(), {
       title: "Save File",
@@ -102,6 +98,11 @@ export const downloadFileAndSave = async (dialog, path, ipfs, fileHash) => {
       let savePath = result.filePath;
       if (!savePath.endsWith('.mfs')) {
         savePath += '.jpeg';
+      }
+      const IPFS = await ipfs;
+      const CAT = IPFS.cat(extractCIDfromURL)
+      for await (const chunk of CAT) {
+        chunks.push(chunk);
       }
       fs.writeFileSync(savePath, Buffer.concat(chunks))
     });

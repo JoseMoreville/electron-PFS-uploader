@@ -1,18 +1,29 @@
-import { reactive, readonly,ref } from "vue"
+import { reactive, readonly } from "vue"
+
+/* eslint-disable */
 const Store = require("electron-store");
 const persistentStore = new Store();
 
 const state = reactive({
-    linkCollection: ref([]),
+    linkCollection: []
+
 })
 
 const mutations = {
     setLinkCollection(link) {
         // push all links to the linkCollection and remove duplicates
         state.linkCollection.push(link)
-        state.linkCollection = [...new Set(state.linkCollection)]
+        //state.linkCollection = []
         persistentStore.set("linkCollection", state.linkCollection )
-    }
+    },
+    clearLinkCollection() {
+        state.linkCollection = []
+        persistentStore.set("linkCollection", state.linkCollection )
+     },
+     removeItemFromCollection(link) {
+        state.linkCollection = state.linkCollection.filter(item => item !== link)
+        persistentStore.set("linkCollection", state.linkCollection )
+     }
 }
 
 const getters = {

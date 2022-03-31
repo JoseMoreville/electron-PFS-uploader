@@ -1,8 +1,9 @@
 <template>
-  <div class="flex flex-col items-center w-full">
+  <div class="flex flex-col items-center">
     <div v-if="isLoading" class="w-full mb-8">
       <div
-        class="bg-indigo-500 relative flex justify-center items-center h-20 rounded-lg text-white flex-col text-center text-xs font-light"
+        class="bg-indigo-500 relative flex justify-center items-center h-20 rounded-lg text-white flex-col text-center text-xs font-light
+        "
       >
         <div
           class="rounded animate-spin ease duration-300 w-5 h-5 border-2 border-white mb-4"
@@ -12,7 +13,10 @@
     </div>
     <button
       @click.stop="openDialog($ipfs)"
-      class="w-36 h-12 bg-indigo-500 rounded-lg  text-white font-semibold"
+      class="w-36 h-12 bg-indigo-500 rounded-lg  text-white 
+      ease-in duration-100
+        hover:bg-indigo-600 hover:shadow-md hover:font-semibold hover:underline underline-offset-2
+      "
     >
       Upload File
     </button>
