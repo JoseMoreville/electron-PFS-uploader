@@ -5,11 +5,16 @@ const Store = require("electron-store");
 const persistentStore = new Store();
 
 const state = reactive({
-    linkCollection: []
-
+    linkCollection: [],
+    isLoading: false,
 })
 
 const mutations = {
+    setLinkCollectionOnStart(link) {
+        state.linkCollection = []
+        state.linkCollection.push(link)
+
+    },
     setLinkCollection(link) {
         // push all links to the linkCollection and remove duplicates
         state.linkCollection.push(link)
@@ -23,6 +28,9 @@ const mutations = {
      removeItemFromCollection(link) {
         state.linkCollection = state.linkCollection.filter(item => item !== link)
         persistentStore.set("linkCollection", state.linkCollection )
+     },
+     setIsLoading(stateValue){
+        state.isLoading = stateValue
      }
 }
 

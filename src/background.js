@@ -20,8 +20,10 @@ async function createWindow() {
     height: 960,
     minHeight: 800,
     minWidth: 1024,
+    maxWidth: 2560,
+    maxHeight: 1440,
     center: true,
-    title: '',
+    title: 'Test',
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info

@@ -14,7 +14,6 @@
     @click="deleteElement(elementSRC)"
   >
     <span class="sr-only">Close menu</span>
-    <!-- Heroicon name: outline/x -->
     <svg
       class="h-6 w-6"
       xmlns="http://www.w3.org/2000/svg"
@@ -43,13 +42,16 @@
   >
     <div class="w-full h-full">
       <div
-        class="h-1/2 bottom-0 w-full absolute bg-gradient-to-b from-white to-black mix-blend-multiply rounded-b-lg "
+        class="h-1/2 bottom-0 w-full absolute bg-gradient-to-b 
+        from-white to-black mix-blend-multiply rounded-b-lg "
       ></div>
       <div
-        class="h-1/2 bottom-0 w-full absolute text-white text-center rounded-b-lg z-10 flex justify-center items-center max-h-[20em]"
+        class="h-1/2 bottom-0 w-full absolute text-white text-center 
+        rounded-b-lg z-10 flex justify-center items-center max-h-[20em]"
       >
         <p
-          class="text-xs font-bold hover:cursor-pointer antialiased hover:underline transition ease duration-300 hover:text-teal-500 hover:shadow underline-offset-2
+          class="text-xs font-bold hover:cursor-pointer antialiased hover:underline 
+          transition ease duration-300 hover:text-teal-500 hover:shadow underline-offset-2
           group-hover:text-teal-500 group-hover:shadow-md group-hover:underline
           "
         >
@@ -86,7 +88,6 @@ defineProps({
 });
 const imgElement = ref(null);
 function altElement() {
-  //this.src = "https://via.placeholder.com/728x90.png?text=No+Image+Found";
   imgElement.value.src =
     "https://via.placeholder.com/300x400.png?text=No+Image+Found";
 }

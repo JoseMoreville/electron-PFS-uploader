@@ -1,16 +1,25 @@
 <template>
   <div
-    class="w-screen h-full flex flex-col px-24 max-w-screen-2xl self-center justify-around"
+    class="w-screen h-full flex flex-col px-24 
+    max-w-screen-2xl self-center justify-around"
   >
     <header class="flex w-full justify-between items-center">
-      <img src="./assets/p2p.png" alt="" srcset="" class="w-12 h-12 animate-[spin_16s_ease-in-out_infinite] " />
-      <small class="text-sm self-end text-slate-300">
+      <img src="./assets/p2p.png" 
+      alt="" 
+      srcset="" 
+      class="w-12 h-12 animate-[spin_16s_ease-in-out_infinite] " />
+      <small 
+      class="text-sm self-end text-slate-300">
         Connected with: {{ connections || localConnections }} users</small
       >
     </header>
 
     <div class="flex flex-col w-full min-h-48">
       <h1 class="text-indigo-500 font-bold text-xl mb-8">Your uploads</h1>
+      {{isLoading}}
+      <FileIsLoading 
+        v-if="store.state.isLoading"
+      />
       <div
         v-if="store.state.linkCollection.length !== 0 || isThereLocalData"
         class="flex flex-wrap justify-between items-center gap-[1.6rem] 
@@ -30,7 +39,8 @@
       </div>
 
       <div
-        class="w-full h-48 flex justify-center border-2 border-solid border-indigo-500 rounded-lg bg-slate-100"
+        class="w-full h-48 flex justify-center border-2 
+        border-solid border-indigo-500 rounded-lg bg-slate-100"
         v-else
       >
         <p class="text-center text-gray-500 self-center">
@@ -49,9 +59,11 @@
 <script setup>
 import UploadButton from "./components/UploadButton.vue";
 import UploadedElements from "./components/UploadedElements.vue";
+import ClearIPFS from "./components/ClearIPFS.vue";
+import FileIsLoading from "./components/FileIsLoading.vue";
 import store from "./store/store";
 import { onMounted, provide, ref } from "vue";
-import ClearIPFS from "./components/ClearIPFS.vue";
+
 // eslint-disable-next-line
 const Store = require("electron-store");
 const persistentStore = new Store();
@@ -87,7 +99,7 @@ onMounted(() => {
     isThereLocalData.value = true;
     existingLinks.forEach((item) => {
       console.log(item);
-      //store.mutations.setLinkCollection(item);
+      store.mutations.setLinkCollectionOnStart(item);
     });
   }
 });

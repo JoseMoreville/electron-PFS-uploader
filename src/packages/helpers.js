@@ -1,4 +1,5 @@
 /* eslint-disable */
+import store from "@/store/store.js";
 import { addFile } from "./ipfsHelpers.js";
 const { getCurrentWindow } = require("electron").remote;
 const fs = require("fs");
@@ -40,8 +41,7 @@ export const dialogOpenDarwin = (
   dialog,
   path,
   ipfs,
-  isLoading,
-  state = null
+  store = null
 ) => {
   // If the platform is 'darwin' (macOS)
   dialog
@@ -62,8 +62,7 @@ export const dialogOpenDarwin = (
     .then(async (file) => {
       // file cancelled handling
       if (file.canceled) {
-        console.log("cancelled", file.canceled);
-        isLoading.value = false;
+        store.mutations.setIsLoading(false)
         global.filepath = undefined;
         throw new Error("file upload was cancelled");
         return;
@@ -73,12 +72,11 @@ export const dialogOpenDarwin = (
       ];
       const filePath = `/files/${fileName}`;
       const fileHash = await addFile(fileName, file.filePaths[0], ipfs);
-      //linkCollection?.value.push(`https://ipfs.io/ipfs/${fileHash}`);
-      state?.mutations?.setLinkCollection(`https://ipfs.io/ipfs/${fileHash}`);
-      isLoading.value = false;
+      store?.mutations?.setLinkCollection(`https://ipfs.io/ipfs/${fileHash}`);
+      store?.mutations.setIsLoading(false)
     })
     .catch((err) => {
-      isLoading.value = false;
+      store.mutations.setIsLoading(false)
     });
 };
 
