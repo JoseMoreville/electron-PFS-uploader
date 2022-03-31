@@ -16,7 +16,6 @@
 
     <div class="flex flex-col w-full min-h-48">
       <h1 class="text-indigo-500 font-bold text-xl mb-8">Your uploads</h1>
-      {{isLoading}}
       <FileIsLoading 
         v-if="store.state.isLoading"
       />
@@ -30,10 +29,10 @@
           'overflow-y-scroll' : store.state.linkCollection.length > 4,
         }"
       >
-        <UploadedElements
-          v-for="(item, index) in store.state.linkCollection"
-          :key="`${item}-${index}`"
 
+        <UploadedElements
+          v-for="(item) in store.state.linkCollection"
+          :key="item"
           :elementSRC="item"
         />
       </div>
@@ -97,8 +96,8 @@ exec("arp -a", (err, stdout, stderr) => {
 onMounted(() => {
   if (existingLinks) {
     isThereLocalData.value = true;
+    store.mutations.clearTempLinkCollection()
     existingLinks.forEach((item) => {
-      console.log(item);
       store.mutations.setLinkCollectionOnStart(item);
     });
   }

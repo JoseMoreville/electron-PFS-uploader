@@ -11,7 +11,6 @@ const state = reactive({
 
 const mutations = {
     setLinkCollectionOnStart(link) {
-        state.linkCollection = []
         state.linkCollection.push(link)
 
     },
@@ -20,6 +19,9 @@ const mutations = {
         state.linkCollection.push(link)
         //state.linkCollection = []
         persistentStore.set("linkCollection", state.linkCollection )
+    },
+    clearTempLinkCollection() {
+        state.linkCollection = []
     },
     clearLinkCollection() {
         state.linkCollection = []
