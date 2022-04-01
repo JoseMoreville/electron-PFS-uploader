@@ -1,6 +1,6 @@
 <template>
-<div class="w-1/5 relative ease duration-300 hover:shadow-md rounded-lg v max-h-[20em]">
-  {{item}}
+<div class="w-1/5 flex flex-col ease duration-300 rounded-lg v max-h-[22em] min-w-[130px]">
+<div class="w-full relative hover:shadow-md peer rounded-lg ">
   <button
     type="button"
     class="bg-white rounded-md p-2 inline-flex items-center justify-center 
@@ -11,7 +11,7 @@
     peer
     "
     
-    @click="deleteElement(elementSRC)"
+    @click="deleteElement(indexOnCollection)"
   >
     <span class="sr-only">Close menu</span>
     <svg
@@ -38,7 +38,7 @@
     peer-*:scale-100
     group
     "
-    @click="downloadFileAndSave(dialog, path, $ipfs, elementSRC)"
+    @click="downloadFileAndSave(dialog, path, $ipfs, elementSRC, title)"
   >
     <div class="w-full h-full">
       <div
@@ -65,12 +65,15 @@
         srcset=""
         class="aspect-auto h-full w-full rounded-lg box-shadow-lg"
         :onerror="altElement"
-        :title="elementSRC"
+        :title="title"
         ref="imgElement"
         style="object-fit: cover"
       />
     </div>
   </div>
+</div>
+
+<p class="text-center text-indigo-600 text-sm">{{title}}</p>
 </div>
 </template>
 <script setup>
@@ -85,7 +88,10 @@ const path = require("path");
 const { dialog } = require("electron").remote;
 defineProps({
   elementSRC: String,
+  title: String,
+  indexOnCollection: Number,
 });
+
 const imgElement = ref(null);
 function altElement() {
   imgElement.value.src =

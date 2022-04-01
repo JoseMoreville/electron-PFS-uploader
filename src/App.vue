@@ -9,7 +9,7 @@
       srcset="" 
       class="w-12 h-12 animate-[spin_16s_ease-in-out_infinite] " />
       <small 
-      class="text-sm self-end text-slate-300">
+      class="text-sm self-end text-slate-500">
         Connected with: {{ connections || localConnections }} users</small
       >
     </header>
@@ -20,27 +20,30 @@
         v-if="store.state.isLoading"
       />
       <div
-        v-if="store.state.linkCollection.length !== 0 || isThereLocalData"
+        v-if="store.state.linkCollection.length !== 0 || store.state.existingLinks "
         class="flex flex-wrap justify-between items-center gap-[1.6rem] 
         grow basis-1/5 border-[3px] border-solid border-indigo-500 min-h-[16em]
         max-h-[24em]  
-        rounded-lg p-4"
+        rounded-lg p-4 min-w-[130px]"
         :class="{
           'overflow-y-scroll' : store.state.linkCollection.length > 4,
         }"
       >
 
         <UploadedElements
-          v-for="(item) in store.state.linkCollection"
-          :key="item"
-          :elementSRC="item"
+          v-for="(item,index) in store.state.linkCollection"
+          :key="item.fileName"
+          :title="item.fileName"
+          :elementSRC="item.hash"
+          :indexOnCollection="index"
         />
       </div>
 
       <div
         class="w-full h-48 flex justify-center border-2 
         border-solid border-indigo-500 rounded-lg bg-slate-100"
-        v-else
+        v-if="store.state.linkCollection.length === 0 && store.state.existingLinks === null "
+        
       >
         <p class="text-center text-gray-500 self-center">
           You have not uploaded any files yet.
@@ -65,14 +68,13 @@ import { onMounted, provide, ref } from "vue";
 
 // eslint-disable-next-line
 const Store = require("electron-store");
-const persistentStore = new Store();
+//const persistentStore = new Store();
 provide("store", store);
 
 const connections = ref(0);
 const localConnections = ref(0);
 const isThereLocalData = ref(false);
 const { exec } = require("child_process");
-const existingLinks = persistentStore.get("linkCollection") || null;
 // eslint-disable-next-line
 exec("ipfs swarm peers", (err, stdout, stderr) => {
   if (err) {
@@ -94,10 +96,10 @@ exec("arp -a", (err, stdout, stderr) => {
 });
 
 onMounted(() => {
-  if (existingLinks) {
+  if (store.state.existingLinks) {
     isThereLocalData.value = true;
     store.mutations.clearTempLinkCollection()
-    existingLinks.forEach((item) => {
+    store.state.existingLinks.forEach((item) => {
       store.mutations.setLinkCollectionOnStart(item);
     });
   }

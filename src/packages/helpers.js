@@ -1,6 +1,7 @@
 /* eslint-disable */
 import store from "@/store/store.js";
 import { addFile } from "./ipfsHelpers.js";
+import {readLocalFilebuffer, createTimeout} from "./utilities.js";
 const { getCurrentWindow } = require("electron").remote;
 const fs = require("fs");
 global.filepath = undefined;
@@ -70,9 +71,9 @@ export const dialogOpenDarwin = (
       const fileName = file.filePaths[0].toString().split("/")[
         file.filePaths[0].toString().split("/").length - 1
       ];
-      const filePath = `/files/${fileName}`;
-      const fileHash = await addFile(fileName, file.filePaths[0], ipfs);
-      store?.mutations?.setLinkCollection(`https://ipfs.io/ipfs/${fileHash}`);
+      console.log(fileName); 
+      const uploadedData = await addFile(fileName, file.filePaths[0], ipfs);
+      store?.mutations?.setLinkCollection({fileName:uploadedData.fileName, hash:`https://ipfs.io/ipfs/${uploadedData.fileHash}`});
       store?.mutations.setIsLoading(false)
     })
     .catch((err) => {
@@ -80,11 +81,10 @@ export const dialogOpenDarwin = (
     });
 };
 
-export const downloadFileAndSave = async (dialog, path, ipfs, fileHash) => {
+export const downloadFileAndSave = async (dialog, path, ipfs, fileHash, title) => {
   const Dialog = dialog
   const extractCIDfromURL = fileHash.split("/")[fileHash.split("/").length - 1];
   const chunks = [];
-
   Dialog
     .showSaveDialog(getCurrentWindow(), {
       title: "Save File",
@@ -94,14 +94,29 @@ export const downloadFileAndSave = async (dialog, path, ipfs, fileHash) => {
     .then(async (result) => {
       if (result.canceled) return;
       let savePath = result.filePath;
+      const IPFS = await ipfs;
+      let isTheTimeout = false
+      let loopFinished = false
       if (!savePath.endsWith('.mfs')) {
         savePath += '.jpeg';
       }
-      const IPFS = await ipfs;
-      const CAT = IPFS.cat(extractCIDfromURL)
-      for await (const chunk of CAT) {
-        chunks.push(chunk);
+
+      createTimeout(2500, isTheTimeout, loopFinished, ()=>{
+        if(loopFinished === false){
+          console.log('timeout for forawait')
+          fs.writeFileSync(savePath, readLocalFilebuffer(`${title}`))
+        }
+      })
+      while(isTheTimeout === false){
+        if(loopFinished){
+          break;
+        }
+        const CAT = IPFS.cat(extractCIDfromURL)
+        for await (const chunk of CAT) {
+          chunks.push(chunk);
+        }
+        fs.writeFileSync(savePath, Buffer.concat(chunks))
+        loopFinished = true
       }
-      fs.writeFileSync(savePath, Buffer.concat(chunks))
     });
 };

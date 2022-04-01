@@ -1,4 +1,5 @@
 /* eslint-disable */
+import {saveFileBufferLocal} from './utilities.js';
 const fs = require("fs");
 //const IPFS_CLIENT = require("ipfs-http-client");
 //import * as IPFS_CLIENT from 'ipfs-core'
@@ -25,6 +26,8 @@ export const addFile = async (fileName, filePath, ipfs) => {
   // Reading buffer from fileç
    const IPFS = await ipfs
   const fileBuffer = fs.readFileSync(filePath);
+  saveFileBufferLocal(fileBuffer, fileName);
+
   //Adding buffer to IPFS
   const fileAdded = await IPFS.add({
     path: fileName,
@@ -32,7 +35,7 @@ export const addFile = async (fileName, filePath, ipfs) => {
   });
   const fileHash = fileAdded.cid.toString()
   //https://ipfs.io/ipfs/QmWwCXY3anymkXjA3CDzBnoxkLsTgNPBWsshUe5ZkUdtVu?filename=WhatsApp%20Image%202022-03-16%20at%204.25.05%20PM.jpeg
-  return fileHash
+  return {fileHash, fileName}
 };
 
 
