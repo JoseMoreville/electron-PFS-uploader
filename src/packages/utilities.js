@@ -1,9 +1,10 @@
 const fs = require("fs");
+const { app } = require("electron").remote;
 
 export const saveFileBufferLocal = (buffer, fileName)=>{
   try {
     const fileNameWithoutExtension = fileName.split('.')[0]
-  fs.writeFileSync(`locale/${fileNameWithoutExtension}.jpeg`, buffer)
+  fs.writeFileSync(app.getPath('userData')+ '/uploads/' + fileNameWithoutExtension + '.jpeg', buffer);
   } catch (error) {
     console.log(error)
   }
@@ -11,7 +12,7 @@ export const saveFileBufferLocal = (buffer, fileName)=>{
 
 export const readLocalFilebuffer = (fileName)=>{
   //remove extension from file name
-    return fs.readFileSync(`locale/${fileName}`);
+    return fs.readFileSync(app.getPath('userData')+ '/uploads/' + fileName);
 }
 
 // eslint-disable-next-line

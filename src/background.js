@@ -1,10 +1,13 @@
 'use strict'
 require('@electron/remote/main').initialize()
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const ElectronStore = require('electron-store');
+const fs = require('fs');
+//const APP_DATA_PATH_WIN = 'C:\\Users\\' + os.userInfo().username + '\\AppData\\Roaming\\hades.test.app';
+//const APP_DATA_PATH_LINUX = '/home/' + os.userInfo().username + '/.config/hades.test.app';
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -31,7 +34,8 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       enableRemoteModule: true,
-      webSecurity: false, 
+      webSecurity: false,
+      devTools:  process.env.WEBPACK_DEV_SERVER_URL ? true : false
     }
   })
 
@@ -44,10 +48,8 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-
 }
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -67,6 +69,7 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  ipcMain.handle('getPath', () => app.getPath("appData"));
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -75,6 +78,10 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  if (!fs.existsSync(app.getPath('userData') + '/uploads')){
+    fs.mkdirSync(app.getPath('userData') + '/uploads');
+}
+
   createWindow()
 })
 

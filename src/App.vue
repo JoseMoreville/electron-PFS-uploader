@@ -65,7 +65,6 @@ import ClearIPFS from "./components/ClearIPFS.vue";
 import FileIsLoading from "./components/FileIsLoading.vue";
 import store from "./store/store";
 import { onMounted, provide, ref } from "vue";
-
 // eslint-disable-next-line
 const Store = require("electron-store");
 //const persistentStore = new Store();
@@ -78,7 +77,7 @@ const { exec } = require("child_process");
 // eslint-disable-next-line
 exec("ipfs swarm peers", (err, stdout, stderr) => {
   if (err) {
-    console.error(err);
+    //console.error(err);
     return;
   }
   connections.value = stdout.split("\n").length - 1;
@@ -88,7 +87,7 @@ exec("ipfs swarm peers", (err, stdout, stderr) => {
 // eslint-disable-next-line
 exec("arp -a", (err, stdout, stderr) => {
   if (err) {
-    console.error(err);
+    //console.error(err);
     return;
   }
   localConnections.value = stdout.split("\n").length - 1;
