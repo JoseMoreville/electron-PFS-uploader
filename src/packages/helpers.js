@@ -22,16 +22,23 @@ export const dialogOpenWindows = (dialog, path) => {
       // Specifying the File Selector Property
       properties: ["openFile"],
     })
-    .then((file) => {
+    .then(async (file) => {
       // Stating whether dialog operation was
       // cancelled or not.
-      console.log(file.canceled);
-      if (!file.canceled) {
-        // Updating the GLOBAL filepath variable
-        // to user-selected file.
-        global.filepath = file.filePaths[0].toString();
-        console.log(global.filepath);
+      // file cancelled handling
+      if (file.canceled) {
+        store.mutations.setIsLoading(false)
+        global.filepath = undefined;
+        throw new Error("file upload was cancelled");
+        return;
       }
+      const fileName = file.filePaths[0].toString().split("/")[
+        file.filePaths[0].toString().split("/").length - 1
+      ];
+      console.log(fileName); 
+      const uploadedData = await addFile(fileName, file.filePaths[0], ipfs);
+      store?.mutations?.setLinkCollection({fileName:uploadedData.fileName, hash:`https://ipfs.io/ipfs/${uploadedData.fileHash}`});
+      store?.mutations.setIsLoading(false)
     })
     .catch((err) => {
       console.log(err);
